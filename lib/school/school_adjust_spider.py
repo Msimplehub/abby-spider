@@ -48,7 +48,7 @@ class SchoolAdjustSpider(BaseSpider):
     def get_data(self, school_id, cursor, retry, db):
 
         try:
-            check_sql = "select count(1) from school_adjust where schoolId={0}".format(school_id)
+            check_sql = "select id from school_adjust where schoolId={0}".format(school_id)
             count = cursor.execute(check_sql)
             if count > 0:
                 return
@@ -76,7 +76,7 @@ class SchoolAdjustSpider(BaseSpider):
                 self.get_data(school_id, cursor, retry + 1, db)
             else:
                 print("执行错误", ",", school_id)
-                # traceback.print_exc()
+                traceback.print_exc()
 
     def start(self):
         self.collect()

@@ -174,9 +174,9 @@ class ZhiLeCategorySpider(BaseSpider):
             self.collect()
 
     def getDb(self):
-        connection = pymysql.connect(host='mysql-01.db.sit.ihomefnt.org',
+        connection = pymysql.connect(host='10.40.10.115',
                                      user='root',
-                                     password='aijia1234567',
+                                     password='Aijia@1234.com',
                                      db='tanko'
                                      )
         return connection

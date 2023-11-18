@@ -24,6 +24,27 @@ import pymysql
 
 
 class SchoolCategoryDetailSpider(BaseSpider):
+    my_headers = [
+
+        "Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/35.0.1916.153 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:30.0) Gecko/20100101 Firefox/30.0"
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_2) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/537.75.14",
+        "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Win64; x64; Trident/6.0)"
+    ]
+
+    headers = {
+        "Accept": "application/json,text/plain,*/*",
+        "Accept-Encoding": "gzip,deflate,br",
+        "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
+        "Cache-Control": "no-cache",
+        #"Content-Type": "application/json;charset=UTF-8",
+        "Origin": "https://www.kaoyan.cn",
+        "Pragma": "no-cache",
+        "Referer": "https://www.kaoyan.cn/",
+        "User-Agent": random.choice(my_headers)
+        #"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36"
+    }
 
     def collect_city_loupan_data(self, startIndex, endIndex):
         db = self.getDb()
@@ -50,7 +71,7 @@ class SchoolCategoryDetailSpider(BaseSpider):
                 "plan_id": school_category[13],
                 "is_apply": 2
             }
-            response = requests.post(page, data=body)
+            response = requests.post(page, data=body, headers=self.headers)
             json = response.json()
             data = json["data"]
             return data
@@ -76,17 +97,17 @@ class SchoolCategoryDetailSpider(BaseSpider):
     def start(self):
         pool = ThreadPoolExecutor(max_workers=6)
         #self.collect_city_loupan_data(0, 10000)
-        pool.submit(self.collect_city_loupan_data, 0, 10000)
-        pool.submit(self.collect_city_loupan_data, 10000, 20000)
-        pool.submit(self.collect_city_loupan_data, 20000, 30000)
-        pool.submit(self.collect_city_loupan_data, 30000, 40000)
-        pool.submit(self.collect_city_loupan_data, 40000, 50000)
-        pool.submit(self.collect_city_loupan_data, 50000, 60000)
+        start = 170000
+        step = 10000
+        for i in range(1, 5):
+            pool.submit(self.collect_city_loupan_data, start, start+step)
+            start = start + step
+
 
     def getDb(self):
-        connection = pymysql.connect(host='mysql-01.db.sit.ihomefnt.org',
+        connection = pymysql.connect(host='10.40.10.115',
                                      user='root',
-                                     password='aijia1234567',
+                                     password='Aijia@1234.com',
                                      db='tanko'
                                      )
         return connection

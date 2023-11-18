@@ -44,11 +44,11 @@ class SchoolBaseSpider(BaseSpider):
         self.collect_city_loupan_data()
 
     def getDb(self):
-        connection = pymysql.connect(host = 'mysql-01.db.sit.ihomefnt.org',
-            user = 'root',
-            password = 'aijia1234567',
-            db = 'tanko'
-            )
+        connection = pymysql.connect(host='10.40.10.115',
+                                     user='root',
+                                     password='Aijia@1234.com',
+                                     db='tanko'
+                                     )
         return connection
 
 

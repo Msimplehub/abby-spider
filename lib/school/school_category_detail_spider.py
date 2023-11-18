@@ -38,7 +38,7 @@ class SchoolCategoryDetailSpider(BaseSpider):
                 data = json.dumps(detail)
                 cursor.execute(sql, (data, school_category[0]))
                 db.commit()
-            time.sleep(2)
+            #time.sleep(2)
         cursor.close()
         db.close()
 
@@ -50,15 +50,15 @@ class SchoolCategoryDetailSpider(BaseSpider):
                 "plan_id": school_category[13],
                 "is_apply": 2
             }
-            response = requests.post(page, data=body, timeout=5)
+            response = requests.post(page, data=body)
             json = response.json()
             data = json["data"]
             return data
         except Exception as e:
-            if retry < 5:
+            if retry < 1:
                 return self.get_school_detail(school_category, retry + 1)
             else:
-                # traceback.print_exc()
+                #traceback.print_exc()
                 print("获取专业明细失败", school_category)
                 return None
 

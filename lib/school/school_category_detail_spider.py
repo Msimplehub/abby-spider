@@ -51,6 +51,7 @@ class SchoolCategoryDetailSpider(BaseSpider):
                 "is_apply": 2
             }
             response = requests.post(page, data=body)
+            state_code = response.status_code
             json = response.json()
             data = json["data"]
             return data

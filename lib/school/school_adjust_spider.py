@@ -41,7 +41,7 @@ class SchoolAdjustSpider(BaseSpider):
             # print("school Id:", school[1])
             # pool.submit(self.get_data, year, school[1], cursor, 0, db)
             self.get_data(school[1], cursor, 0, db)
-            time.sleep(1)
+            time.sleep(2)
         cursor.close()
         db.close()
 
@@ -55,12 +55,13 @@ class SchoolAdjustSpider(BaseSpider):
 
             print("开始获取：", school_id)
             body = {"school_id":school_id,"keyword":"","page":1,"limit":1000}
-
-            result = requests.post("https://api.kaoyan.cn/pc/adjust/schoolAdjustList", body, timeout=5).json()
+            response = requests.post("https://api.kaoyan.cn/pc/adjust/schoolAdjustList", body, timeout=5)
+            result = response.json()
             #print(result)
             data = result["data"]
             school_datas = data["data"]
             if len(school_datas) == 0:
+                print("获取数据为空", body)
                 return
             return_json = []
             for school_data in school_datas:
@@ -72,7 +73,7 @@ class SchoolAdjustSpider(BaseSpider):
             db.commit()
         except Exception as e:
             # print("exce catch exception:", year, schoolId, e)
-            if retry < 5:
+            if retry < 2:
                 self.get_data(school_id, cursor, retry + 1, db)
             else:
                 print("执行错误", ",", school_id)

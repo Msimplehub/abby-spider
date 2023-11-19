@@ -11,6 +11,7 @@ import traceback
 import requests
 from bs4 import BeautifulSoup
 from lib.item.loupan import *
+from lib.school.school_spider_header import SchoolSpiderHeader
 from lib.spider.base_spider import *
 from lib.request.headers import *
 from lib.utility.date import *
@@ -24,12 +25,13 @@ import threading
 
 
 class SchoolAdjustSpider(BaseSpider):
+    schoolSpiderHeader = SchoolSpiderHeader()
     def collect(self):
 
         pool = ThreadPoolExecutor(max_workers=3)
         pool.submit(self.get_school_data, 0, 500)
         pool.submit(self.get_school_data, 500, 1000)
-        pool.submit(self.get_school_data, 1000, 2000)
+        pool.submit(self.get_school_data, 1000, 3000)
 
     def get_school_data(self, startIndex, endIndex):
         db = self.getDb()
@@ -54,8 +56,11 @@ class SchoolAdjustSpider(BaseSpider):
                 return
 
             print("开始获取：", school_id)
-            body = {"school_id":school_id,"keyword":"","page":1,"limit":1000}
-            response = requests.post("https://api.kaoyan.cn/pc/adjust/schoolAdjustList", body, timeout=5)
+            body = {"school_id":school_id,"keyword": "", "page": 1, "limit": 2000}
+            response = requests.post("https://api.kaoyan.cn/pc/adjust/schoolAdjustList",
+                                     body,
+                                     headers=self.schoolSpiderHeader.headers,
+                                     timeout=5)
             result = response.json()
             #print(result)
             data = result["data"]

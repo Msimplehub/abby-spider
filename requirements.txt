@@ -11,3 +11,5 @@ pandas
 pyecharts
 pyecharts-snapshot
 gensim==3.6.0
+pycryptodome
+rsa

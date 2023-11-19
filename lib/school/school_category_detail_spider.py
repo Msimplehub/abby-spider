@@ -52,13 +52,16 @@ class SchoolCategoryDetailSpider(BaseSpider):
         sql = "update school_category set detail= %s where id = %s"
         school_categorys = self.list_school(startIndex, endIndex)
         for school_category in school_categorys:
-            if school_category[15] is not None:
-                continue
-            detail = self.get_school_detail(school_category, 0)
-            if detail is not None:
-                data = json.dumps(detail)
-                cursor.execute(sql, (data, school_category[0]))
-                db.commit()
+            try:
+                if school_category[15] is not None:
+                    continue
+                detail = self.get_school_detail(school_category, 0)
+                if detail is not None:
+                    data = json.dumps(detail)
+                    cursor.execute(sql, (data, school_category[0]))
+                    db.commit()
+            except Exception as e:
+                traceback.print_exc()
             #time.sleep(2)
         cursor.close()
         db.close()
@@ -97,10 +100,10 @@ class SchoolCategoryDetailSpider(BaseSpider):
 
     def start(self):
         pool = ThreadPoolExecutor(max_workers=6)
-        #self.collect_city_loupan_data(0, 10000)
-        start = 170000
-        step = 10000
-        for i in range(1, 5):
+        #self.collect_city_loupan_data(0, 500000)
+        start = 0
+        step = 4000
+        for i in range(1, 110):
             pool.submit(self.collect_city_loupan_data, start, start+step)
             start = start + step
 

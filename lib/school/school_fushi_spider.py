@@ -86,13 +86,48 @@ class SchoolFuShiSpider(BaseSpider):
 
 
     def start(self):
-        self.collect_city_loupan_data()
+        self.clean_data()
+
+    def clean_data(self):
+        db = self.getDb()
+        cursor = db.cursor()
+        sql_school = "select * from school"
+        cursor.execute(sql_school)
+        schools = cursor.fetchall()
+        for school in schools:
+            school_id = school[1]
+            fushi_2023 = school[5]
+            fushi_2022 = school[6]
+            insert_sql = "INSERT INTO tanko.school_retest(schoolId, note, `year`, total, english, politics, diff_total, degree_type, special_one, special_two, diff_english, special_code, special_name, diff_politics, degree_type_name, diff_special_one, diff_special_two)VALUES(%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+            insert_data = []
+            if fushi_2022 is not None:
+                for fushi in json.loads(fushi_2022):
+                    insert_data.append((school_id, fushi["note"],fushi["year"],fushi["total"],fushi["english"],fushi["politics"],fushi["diff_total"],fushi["degree_type"],fushi["special_one"],fushi["special_two"],fushi["diff_english"],fushi["special_code"],fushi["special_name"],fushi["diff_politics"],fushi["degree_type_name"],fushi["diff_special_one"],fushi["diff_special_two"]))
+            if fushi_2023 is not None:
+                for fushi in json.loads(fushi_2023):
+                    insert_data.append((school_id, fushi["note"], fushi["year"], fushi["total"], fushi["english"],
+                                        fushi["politics"], fushi["diff_total"], fushi["degree_type"], fushi["special_one"],
+                                        fushi["special_two"], fushi["diff_english"], fushi["special_code"],
+                                        fushi["special_name"], fushi["diff_politics"], fushi["degree_type_name"],
+                                        fushi["diff_special_one"], fushi["diff_special_two"]))
+            cursor.executemany(insert_sql, insert_data)
+            db.commit()
+        cursor.close()
+        db.close()
 
     def getDb(self):
         connection = pymysql.connect(host='10.40.10.115',
                                      user='root',
                                      password='Aijia@1234.com',
                                      db='tanko'
+                                     )
+        return connection
+
+    def getDb_yan(self):
+        connection = pymysql.connect(host='10.40.10.115',
+                                     user='root',
+                                     password='Aijia@1234.com',
+                                     db='x-yan'
                                      )
         return connection
 
